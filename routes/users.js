@@ -14,20 +14,16 @@ router.get('/', function(req, res, next) {
     var user=req.session.user;
   con.query(sql,(err,result)=>{
     if(err){
-      //res.redirect('/users/error')
       console.log(err)
     }
     else{
       console.log(result)
-
         let product = result;
       con.query(sql2,[email],(err,result)=>{
         if(err){
           console.log(err)
-        //  res.redirect('/users/error')
         }
-        else{
-              
+        else{       
             con.query(sql3,(err,offer)=>{
               if(err){
                 console.log(err)
@@ -48,37 +44,23 @@ router.get('/', function(req, res, next) {
                   }else{
                     res.render('user/home',{product,user,CartTotal,foods});
                   }
-                })
-              
-                  }
-            
-                
-              
-            })
-
-
-           
-        }
-      
+                })}        
+            })}
       })
     }
   })
 });
+
 router.get('/userLogin',function(req,res,next){
   res.render("user/userLogin",{homepage:true})
 })
-
-
-
 router.get('/userReg',function(req,res,next){
   var msg=""
   res.render("user/userReg",{msg,homepage:true})
 })
-
 router.get("/myorders",(req,res)=>{
   var user=req.session.user;
   var email=req.session.user.email;
-
   var sql="SELECT product.Price,product.Image,product.Description,orders.email,orders.status,orders.id FROM product INNER JOIN orders ON product.id = orders.Product_id AND orders.email=?;"
   con.query(sql,[email],(err,result)=>{
     if(err){
@@ -166,17 +148,6 @@ con.query(sql1,[email],(err,result)=>{
   }
 })
 })
-  // var sql="insert into user set ?"
-  // var data=req.body;
-  // con.query(sql,data,(error,result)=>{
-  //   if(error){
-  //     console.log(error)
-  //   }
-  //   else{
-  //     console.log("successfully inserted");
-  //   }
-  // })
-
 router.get('/logout',(req,res)=>{
   req.session.destroy()
   res.redirect('/')
