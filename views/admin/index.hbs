@@ -37,7 +37,7 @@
           <a class="nav-link" href="http://gmap.cs.arizona.edu/" target="_blank" style="color: white;"><b><i>Escape Root</i></b></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#" style="color: white;"><b><i>Prediction</i></b></a>
+          <a class="nav-link" href="http://localhost:5000/" target="_blank" style="color: white;"><b><i>Prediction</i></b></a>
         </li>
             <li>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
@@ -46,7 +46,7 @@
             </li>
         </li>
                 <li class="nav-item">
-          <a class="nav-link" href="/" style="color: white;"><b><i>Logout</i></b></a>
+          <a class="nav-link" href="/logout" style="color: white;"><b><i>Logout</i></b></a>
         </li>
  
           
@@ -94,6 +94,30 @@
       <td> <img style="height: 50px; width:50px" src="/images/product/{{this.Image}}" alt=""> </td>
     {{!-- <td><a href="#">{{this.sellerID}}</a></td> --}}
     <td><a class="btn btn-outline-danger" href="/delete/{{this.id}}">Delete</a></td>
+    </tr>
+   {{/each}}
+   
+  </tbody>
+</table>
+    <h1 style="text-align: center;"><b>Skills</b></h1>
+  <br><br><br>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Email</th>
+      <th scope="col">Name</th>
+      <th scope="col">Skill</th>
+      <th scope="col">id</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each row}}
+    <tr>
+      <th scope="row">{{this.email}}</th>
+      <td>{{this.name}}</td>
+      <td>{{this.skills}}</td>
+      <td>{{this.id}}</td>
     </tr>
    {{/each}}
    

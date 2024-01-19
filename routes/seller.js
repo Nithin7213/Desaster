@@ -3,7 +3,7 @@ var router = express.Router();
 var con=require('../config/config');
 var nodemailer = require('nodemailer');
 /* GET home page. */
-
+var checkUser = require('../middleware/checkUser')
 
 router.get('/',(req,res)=>{
     res.render('seller/sellerLogin')
@@ -16,7 +16,6 @@ router.get('/sellerHome',(req,res)=>{
       console.log(err)
     }
     else{
-
       con.query(sql2,(err,row)=>{
         var user = req.session.user;
         console.log(row)
@@ -26,7 +25,7 @@ router.get('/sellerHome',(req,res)=>{
     }
   })
 })
-router.get('/ViewRoots',(req,res)=>{
+router.get('/ViewRoots',checkUser,(req,res)=>{
   var sql="select * from roots"
   sql2= "select * from offer"
 con.query(sql,(err,result)=>{
@@ -34,13 +33,11 @@ con.query(sql,(err,result)=>{
     console.log(err)
   }
   else{
-
     con.query(sql2,(err,row)=>{
       var user = req.session.user;
       console.log(row)
       res.render('seller/roots',{result,user});
     })
-
   }
 })
 })
@@ -65,10 +62,8 @@ router.get('/clinic',(req,res)=>{
               res.render('seller/clinic',{result,user,homepage:true,row})
             }
         })
-     
     }
-  })
-  
+  }) 
 })
 
  router.post('/register',(req,res)=>{
@@ -107,59 +102,94 @@ router.get('/clinic',(req,res)=>{
  })
 
 
- router.post('/userLogin',async(req,res)=>{
-    console.log(req.body);
-    var email=req.body.email;
-    var pass=req.body.password;
-    var type=req.body.type;
-    var sql="select * from seller where email=? and password=? and type=?"
-    
-    await con.query(sql,[email,pass,type],(err,result)=>{
-      if(err){
-        console.log(err);
-      }
-      else{
-        console.log(result)
-         var status = result[0].status;
-          var type = result[0].type;
-        //  if(result.length > 0 && status=='pending'){
-            console.log("login successfull")
-            req.session.user=result[0];
-            var user = req.session.user;
-            var sid = user.id;
-            var sql3  = `select * from product where sellerID = ${sid} `
-            con.query(sql3,(err,row2)=>{
-              if(err){
-                console.log(err)
-              }else{
-                if(type == 'volunteer'){
-                  var sqld = "select * from doctors"
-                  con.query(sqld,(err,rowd)=>{
-                    if(err){
-                      console.log(err)
-                    }else{
-                      req.session.volData = rowd;
-                      res.render('seller/sellerHome',{result:rowd,user});
-                    }
-                  })
-                }else{
-                  res.redirect('/seller/clinic')
-                  //res.render('seller/clinic',{user,homepage:true});
-                }
-                
+ router.post('/userLogin', async (req, res) => {
+  try {
+      console.log(req.body);
+      var email = req.body.email;
+      var pass = req.body.password;
+      var type = req.body.type;
+
+      var sql = "SELECT * FROM seller WHERE email=? AND password=? AND type=?";
+       con.query(sql, [email, pass, type], (err, result) => {
+          if (err) {
+              console.log(err);
+              res.status(500).send("Internal Server Error");
+          } else {
+            console.log(result)
+              if (result.length > 0) {
+                  var status = result[0].status;
+                  var userType = result[0].type;
+
+                  if (status === 'pending') {
+                      console.log("login successful");
+
+                      req.session.user = result[0];
+                      var user = req.session.user;
+                      var sid = user.id;
+
+                      var sql3 = `SELECT * FROM product WHERE sellerID = ${sid}`;
+                      con.query(sql3, (err, row2) => {
+                          if (err) {
+                              console.log(err);
+                              res.status(500).send("Internal Server Error");
+                          } else {
+                              if (userType === 'volunteer') {
+                                  var sqld = "SELECT * FROM doctors";
+                                  con.query(sqld, (err, rowd) => {
+                                      if (err) {
+                                          console.log(err);
+                                          res.status(500).send("Internal Server Error");
+                                      } else {
+                                          req.session.volData = rowd;
+                                          res.render('seller/sellerHome', { result: rowd, user });
+                                      }
+                                  });
+                              } else {
+                                  res.redirect('/seller/clinic');
+                                  // res.render('seller/clinic', { user, homepage: true });
+                              }
+                          }
+                      });
+                  } else {
+                      console.log("login error: status is not pending");
+                      res.redirect('/');
+                  }
+              } else {
+                  console.log("login error: user not found");
+                  res.redirect('/');
               }
-            })
-        // }else{
-        //   console.log("login error")
-        //   res.redirect('/')
-        // }
-      }
-    })
-  })
+          }
+      });
+  } catch (error) {
+      console.log(error);
+      res.status(500).send("Internal Server Error");
+  }
+});
+
+router.post("/addskill",(req,res)=>{
+  console.log(req.session.volData,"session voldata")
+      let skills = req.body.skill;
+      let email = req.body.email;
+      let name = req.body.mobile;
+      let query = "insert into skills set ?"
+          let data = {
+            skills,
+            email,
+            name
+          }
+          console.log(data)
+      con.query(query,data,(err,row)=>{
+        if(err){
+          console.log(err)
+        }else{
+          console.log(row)
+          res.redirect('/seller/clinic')
+        }
+      })
+})
 
 
-
-  router.post('/addProduct',function(req,res){
+  router.post('/addProduct',checkUser,function(req,res){
     var image_name;
     if(!req.files) return res.status(400).send("no files were uploaded.");
     
@@ -201,7 +231,7 @@ router.get('/clinic',(req,res)=>{
 
 //add doctors
 
-router.post('/addDoctors',function(req,res){
+router.post('/addDoctors',checkUser,function(req,res){
   var image_name;
   if(!req.files) return res.status(400).send("no files were uploaded.");
   
@@ -240,7 +270,7 @@ router.post('/addDoctors',function(req,res){
 
 
 
-    router.get("/orders",(req,res)=>{
+    router.get("/orders",checkUser,(req,res)=>{
       var user=req.session.user;
       var email=req.session.user.id;
     
@@ -254,7 +284,7 @@ router.post('/addDoctors',function(req,res){
         }
       })
     })
-    router.get('/placeOrder/:id/:mail',(req,res)=>{
+    router.get('/placeOrder/:id/:mail',checkUser,(req,res)=>{
       var id = req.params.id;
       var mail = req.params.mail;
       sql = "update orders set status = 'order placed' where id = ?"
@@ -293,7 +323,7 @@ router.post('/addDoctors',function(req,res){
     })
 
 
-    router.get('/shipped/:id/:mail',(req,res)=>{
+    router.get('/shipped/:id/:mail',checkUser,(req,res)=>{
       var id = req.params.id;
       var mail = req.params.mail;
       sql = "update orders set status = 'Shipped' where id = ?"
@@ -329,7 +359,7 @@ router.post('/addDoctors',function(req,res){
       })
     })
 
-    router.get('/refund/:id/:mail',(req,res)=>{
+    router.get('/refund/:id/:mail',checkUser,(req,res)=>{
       var id = req.params.id;
       var mail = req.params.mail;
       sql = "update orders set status = 'return approved' where id = ?"
@@ -369,7 +399,7 @@ router.post('/addDoctors',function(req,res){
       res.redirect('/')
     })
 
-    router.get('/deliver/:id/:mail',(req,res)=>{
+    router.get('/deliver/:id/:mail',checkUser,(req,res)=>{
       var mail = req.params.mail;
       var id = req.params.id;
       sql = "update orders set status = 'deliver today' where id = ?"
@@ -406,7 +436,7 @@ router.post('/addDoctors',function(req,res){
       })
     })
 
-router.post('/addblog',(req,res)=>{
+router.post('/addblog',checkUser,(req,res)=>{
     console.log("add blog...")
     var image_name;
     if(!req.files) return res.status(400).send("no files were uploaded.");
@@ -439,7 +469,7 @@ con.query(sql,data,(err,result)=>{
 }) 
 } 
     })
-    router.get('/blogView',(req,res)=>{
+    router.get('/blogView',checkUser,(req,res)=>{
       // sql5="SELECT  * from blog and SUM(set_Like) as sum FROM likes;"
       var user = req.session.user;
 
@@ -458,7 +488,7 @@ con.query(sql,data,(err,result)=>{
     })
 
 
-    router.get('/like/:id',(req,res)=>{
+    router.get('/like/:id',checkUser,(req,res)=>{
       var usermail = req.session.user.email;
       var pid = req.params.id;
       var data = {
@@ -511,7 +541,7 @@ con.query(sql,data,(err,result)=>{
     })
 
 
-    router.get('/application',(req,res)=>{
+    router.get('/application',checkUser,(req,res)=>{
       sql="select * from jobs"
       var user = req.session.user;
       con.query(sql,(err,result)=>{
@@ -524,7 +554,7 @@ con.query(sql,data,(err,result)=>{
       })
     })
 
-    router.get('/invite/:mail',(req,res)=>{
+    router.get('/invite/:mail',checkUser,(req,res)=>{
       var usermail = req.params.mail;
       var seller = req.params.seller;
       let transporter = nodemailer.createTransport({
@@ -554,7 +584,7 @@ con.query(sql,data,(err,result)=>{
       });
       
     })
-  router.post('/addoffer',(req,res)=>{
+  router.post('/addoffer',checkUser,(req,res)=>{
     var image_name;
     if(!req.files) return res.status(400).send("no files were uploaded.");
     
@@ -603,7 +633,7 @@ con.query(sql,data,(err,result)=>{
 
     })
 
-    router.get('/delteD/:id',(req,res)=>{
+    router.get('/delteD/:id',checkUser,(req,res)=>{
       var id = req.params.id;
   
       
@@ -618,7 +648,7 @@ con.query(sql,data,(err,result)=>{
 
     })
 
-    router.get('/bookings',(req,res)=>{
+    router.get('/bookings',checkUser,(req,res)=>{
       var id = req.session.user.id;
       sql = `select * from bookings where clinicID = ${id}`
       con.query(sql,(err,result)=>{

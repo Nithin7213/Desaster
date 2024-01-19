@@ -2,15 +2,19 @@ var express = require('express');
 var router = express.Router();
 var con=require('../config/config');
 let nodemailer = require('nodemailer');
-
+const checkadmin = require('../middleware/checkAdmin')
 /* GET home page. */
 router.get('/',(req,res)=>{
 res.render('admin/homeIndex')
 })
+router.get('/logout',(req,res)=>{
+      req.session.destroy()
+      res.redirect('/')
+})
 router.get('/login',(req,res)=>{
   res.render('admin/adminlogin')
 })
-router.get('/sentAlert/:place',(req,res)=>{
+router.get('/sentAlert/:place',checkadmin,(req,res)=>{
   try {
       let place  = req.params.place
       console.log(place)
@@ -53,20 +57,12 @@ router.get('/sentAlert/:place',(req,res)=>{
 
                   }
         })
-  //  con.query(sql1,[email],(err,result)=>{
-  // if(err){
-  //     console.log(err)
-  //   }
-
-    
       console.log(place)
   } catch (error) {
     console.log(error)
   }
-
-
 })
-router.get('/alerts',(req,res)=>{
+router.get('/alerts',checkadmin,(req,res)=>{
     try {
           let q  ="select * from doctors"
           con.query(q,(err,result)=>{
@@ -81,15 +77,23 @@ router.get('/alerts',(req,res)=>{
     }
 })
 
-router.get('/home', function(req, res, next) {
+router.get('/home', checkadmin,function(req, res, next) {
   var sql="select * from product"
   con.query(sql,(err,result)=>{
     if(err){
       console.log(err)
     }
     else{
-      console.log(result)
-      res.render('admin/index',{result});
+      let query = "select * from skills"
+      con.query(query,(err,row)=>{
+            if(err){
+              console.log(err)
+            }else{
+              console.log(result)
+              res.render('admin/index',{result,row});
+            }
+      })
+    
     }
   })
 
@@ -119,11 +123,11 @@ router.get('/about', function(req, res, next) {
   ]
   res.render('about',{product});
 });
-router.get('/addProduct',function(req,res){
+router.get('/addProduct',checkadmin,function(req,res){
   res.render('admin/addProduct')
 })
 
-router.post('/collector',function(req,res){
+router.post('/collector',checkadmin,function(req,res){
 var image_name;
 if(!req.files) return res.status(400).send("no files were uploaded.");
 
@@ -159,7 +163,7 @@ con.query(sql,data,(err,result)=>{
 }) 
 } 
 })
-router.get('/sellers',(req,res)=>{
+router.get('/sellers',checkadmin,(req,res)=>{
   sql = "select * from seller"
   con.query(sql,(err,result)=>{
     if(err){
@@ -172,7 +176,7 @@ router.get('/sellers',(req,res)=>{
 })
 
 
-router.get('/userlist',(req,res)=>{
+router.get('/userlist',checkadmin,(req,res)=>{
   sql = "select * from seller"
   con.query(sql,(err,result)=>{
     if(err){
@@ -184,7 +188,7 @@ router.get('/userlist',(req,res)=>{
   })
 })
 
-router.get('/Blocke_sellers',(req,res)=>{
+router.get('/Blocke_sellers',checkadmin,(req,res)=>{
   sql = "select * from seller where status = 'blocked'"
   con.query(sql,(err,result)=>{
     if(err){
@@ -195,7 +199,7 @@ router.get('/Blocke_sellers',(req,res)=>{
   }
   })
 })
-router.get('/block/:id',(req,res)=>{
+router.get('/block/:id',checkadmin,(req,res)=>{
   var id = req.params.id;
   sql = "update seller set status = 'blocked' where id = ?"
   con.query(sql,[id],(err,result)=>{
@@ -206,7 +210,7 @@ router.get('/block/:id',(req,res)=>{
     }
   })
 })
-router.get('/approve/:id',(req,res)=>{
+router.get('/approve/:id',checkadmin,(req,res)=>{
   var id = req.params.id;
   sql = "update seller set status = 'approved' where id = ?"
   con.query(sql,[id],(err,result)=>{
@@ -218,7 +222,7 @@ router.get('/approve/:id',(req,res)=>{
   })
 })
 
-router.get('/unblock/:id',(req,res)=>{
+router.get('/unblock/:id',checkadmin,(req,res)=>{
   var id = req.params.id;
   sql = "update seller set status = '1' where id = ?"
   con.query(sql,[id],(err,result)=>{
@@ -235,7 +239,12 @@ router.get('/unblock/:id',(req,res)=>{
 router.post('/adminlog',(req,res)=>{
  var username  = req.body.name;
  var pass  = req.body.pass;
+ let admin = {
+    admin :"admin",
+    role:"admin"
+ }
   if(pass=="admin" & username == "admin"){
+    req.session.admin= admin;
     res.redirect('/home')
   }else{
     res.redirect('/login')
@@ -244,7 +253,7 @@ router.post('/adminlog',(req,res)=>{
 
 
 
-router.get('/delete/:id',(req,res)=>{
+router.get('/delete/:id',checkadmin,(req,res)=>{
   var id = req.params.id;
   sql = "Delete from product where id = ?"
   con.query(sql,[id],(err,result)=>{
@@ -255,7 +264,7 @@ router.get('/delete/:id',(req,res)=>{
     }
   })
 })
-router.get('/Userdelete/:id',(req,res)=>{
+router.get('/Userdelete/:id',checkadmin,(req,res)=>{
   var id = req.params.id;
   sql = "Delete from seller where id = ?"
   con.query(sql,[id],(err,result)=>{
@@ -269,7 +278,7 @@ router.get('/Userdelete/:id',(req,res)=>{
 
 
 
-router.post('/roots',function(req,res){
+router.post('/roots',checkadmin,function(req,res){
   var image_name;
   if(!req.files) return res.status(400).send("no files were uploaded.");
   

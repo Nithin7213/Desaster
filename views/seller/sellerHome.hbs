@@ -19,8 +19,12 @@
 </style>
 <div style="height:70px;width:100%;background-color:black;">
   <h1 style="color:rgb(242, 240, 240);text-align:center"><a href="/seller/ViewRoots">Escape Roots</a></h1>
-
-
+  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Skills">
+      Blog
+</button>
+  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal1">
+      update Skills
+</button>
 </div>
 <div style="height:70px;width:100%;background-color:antiquewhite;">
   <h1 style="color:black;text-align:center">VOLUNTEER SERVICE</h1>
@@ -48,7 +52,7 @@
    
 </div>
 
-<div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<div class="modal fade" id="Skills" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -72,6 +76,52 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <a href="/seller/blogView" class="btn btn-success">Stories</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+            <form action="/seller/addskill" method="post">
+                  <input type="text" placeholder="Enter email" name="email" style="width: 100%;">
+
+                  <input type="text" placeholder="Enter mobile" name="mobile" style="width: 100%;">
+
+                  <input type="text" placeholder="Enter Skills" name="skill" style="width: 100%;">
+                  <br> <br>
+                  <input type="submit" value="Add" style="width: 60%;">
+            </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
