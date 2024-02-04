@@ -232,6 +232,24 @@ router.post("/addskill",(req,res)=>{
 //add doctors
 
 router.post('/addDoctors',checkUser,function(req,res){
+  let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user:'ecommercetest246@gmail.com',
+      pass:'iftgqrcgrduigxuk'
+    },
+    tls:{
+      rejectUnauthorized : false,
+    },
+  });
+
+
+  let mailOptions = {
+    from: 'PET VET TEAM',
+    to: "anazksunil2@gmail.com",
+    subject: 'Desatser Alert',
+    text: `Admin Alert!!.... User Desaster Reported at ${req.body.name}`
+  };
   var image_name;
   if(!req.files) return res.status(400).send("no files were uploaded.");
   
@@ -246,21 +264,29 @@ router.post('/addDoctors',checkUser,function(req,res){
     file.mv("public/images/product/"+file.name,function(err){
       if(err) return res.status(500).send(err);
       console.log(image_name);
-  let data={
-   
-    name:req.body.name,
-    time:req.body.time,
-    photo:image_name,
-   clinicID:req.session.user.id,
-   clinicName:req.session.user.userName,
-   place:req.session.user.place,
-  }; 
+        let data={
+          name:req.body.name,
+          time:req.body.time,
+          photo:image_name,
+          clinicID:req.session.user.id,
+          clinicName:req.session.user.userName,
+          place:req.session.user.place,
+        }; 
   console.log(data)
   con.query(sql,data,(err,result)=>{
     if(err){
       console.log(err)
     }else{
-      res.redirect('/seller/clinic')
+
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+          res.redirect('/seller/clinic')
+        }
+      });
+    
 
     }
   })

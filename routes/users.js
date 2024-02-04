@@ -624,16 +624,16 @@ router.get('/passform',(req,res)=>{
 
 router.post('/updatePass',(req,res)=>{
   var mail = req.body.mail;
-  let transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'greencartkottayam@gmail.com',
-      pass: 'ashwinbabu@123',
-    },
-    tls:{
-      rejectUnauthorized : false,
-    },
-  });
+      let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: 'greencartkottayam@gmail.com',
+          pass: 'ashwinbabu@123',
+        },
+        tls:{
+          rejectUnauthorized : false,
+        },
+      });
   let mailOptions = {
     from: 'PET VET TEAM',
     to: mail,
