@@ -230,7 +230,6 @@ router.post("/addskill",(req,res)=>{
     })
 
 //add doctors
-
 router.post('/addDoctors',checkUser,function(req,res){
   let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -293,6 +292,9 @@ router.post('/addDoctors',checkUser,function(req,res){
   }) 
   } 
   })
+
+
+
 
 
 

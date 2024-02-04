@@ -7,6 +7,18 @@ const checkadmin = require('../middleware/checkAdmin')
 router.get('/',(req,res)=>{
 res.render('admin/homeIndex')
 })
+router.get('/delteD/:id',checkadmin,(req,res)=>{
+  var id = req.params.id;
+  sql = `Delete from doctors where id = ${id}`
+  con.query(sql,(err,result)=>{
+    if(err){
+      console.log(err)
+    }else{
+      res.redirect('/home')
+    }
+  })
+
+})
 router.get('/logout',(req,res)=>{
       req.session.destroy()
       res.redirect('/')
@@ -14,10 +26,10 @@ router.get('/logout',(req,res)=>{
 router.get('/login',(req,res)=>{
   res.render('admin/adminlogin')
 })
-router.get('/sentAlert/:place',checkadmin,(req,res)=>{
+router.post('/sentAlert',checkadmin,(req,res)=>{
   try {
-      let place  = req.params.place
-      console.log(place)
+      let place  = req.body.place
+      console.log(place,req.body.message,"--")
       let q = "select * from seller where place = ?"
 
       let transporter = nodemailer.createTransport({
@@ -41,7 +53,7 @@ router.get('/sentAlert/:place',checkadmin,(req,res)=>{
                               from:"Desaster  Team",
                               to:email,
                               subject:"Alerts",
-                              text:`be alert of flood @ ${place}`,
+                              text:`be alert of flood @ ${place},${req.body.message}`,
                             };
                             await  transporter.sendMail(mailOption,function(err,info){
                               if(err){

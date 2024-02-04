@@ -82,7 +82,9 @@
    <th scope="col">action</th>
    <th scope="col">Alert</th>
 
-    <th scope="col">View Helpers</th>
+    <th scope="col">Sent Messages</th>
+    <th scope="col">View Helper</th>
+
 
     </tr>
   </thead>
@@ -93,10 +95,17 @@
       <td>{{this.name}}</td>
       <td>{{this.time}}</td>
       <td> <img style="height: 50px; width:50px" src="/images/product/{{this.photo}}" alt=""> </td>
-      <td> <a href="/seller/delteD/{{this.id}}" class="btn btn-outline-danger">Delete</a></td>
-      <td><a href="/sentAlert/{{this.name}}" class="btn btn-info">Alert All</a></td>
-  <td><a href="/seller/blogView" class="btn btn-outline-success">View</a></td>
+      <td> <a href="/delteD/{{this.id}}" class="btn btn-outline-danger">Delete</a></td>
+      <form action="/sentAlert" method="post">  
+      <input type="hidden" value="{{this.name}}" name="place">
+       <td><input type="text" placeholder="Enter Message" name="message"></td>
+      <td><button type="submit" class="btn btn-outline-info">Alert All</button></td>
+      {{!-- <td><a href="/sentAlert/{{this.name}}" class="btn btn-info">Alert All</a></td> --}}
+     
     
+     </form>
+     <td><a href="/seller/blogView" class="btn btn-outline-success">View</a></td>
+
     </tr>
    {{/each}}
    
