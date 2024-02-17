@@ -230,7 +230,7 @@ router.post("/addskill",(req,res)=>{
     })
 
 //add doctors
-router.post('/addDoctors',checkUser,function(req,res){
+router.post('/addDoctors',function(req,res){
   let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -245,7 +245,7 @@ router.post('/addDoctors',checkUser,function(req,res){
 
   let mailOptions = {
     from: 'PET VET TEAM',
-    to: "anazksunil2@gmail.com",
+    to: "nithinabraham7213@gmail.com",
     subject: 'Desatser Alert',
     text: `Admin Alert!!.... User Desaster Reported at ${req.body.name}`
   };
