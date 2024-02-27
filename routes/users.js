@@ -5,51 +5,41 @@ var con=require('../config/config');
 var nodemailer = require('nodemailer');
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  var sql="select * from doctors"
-  sql3 = "select * from offer"
-  var sql2="select userMail, count(*) as total FROM cart where userMail=?;"
-  if(req.session.user){
-    var email=req.session.user.email;
-    }
-    var user=req.session.user;
-  con.query(sql,(err,result)=>{
-    if(err){
-      console.log(err)
-    }
-    else{
-      console.log(result)
-        let product = result;
-      con.query(sql2,[email],(err,result)=>{
-        if(err){
-          console.log(err)
+  var sql = "SELECT * FROM disaster";
+  var sql2 = "SELECT COUNT(*) AS total FROM disaster";
+
+  if (req.session.user) {
+    var email = req.session.user.email;
+  }
+
+  con.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+      // Handle error appropriately, maybe send an error response
+      return res.status(500).send('Internal Server Error');
+    } else {
+      console.log(result);
+      let product = result;
+
+      con.query(sql2, (err, countResult) => {
+        if (err) {
+          console.log(err);
+          // Handle error appropriately, maybe send an error response
+          return res.status(500).send('Internal Server Error');
         }
-        else{       
-            con.query(sql3,(err,offer)=>{
-              if(err){
-                console.log(err)
-              }else{
-                var CartTotal = result[0].total;
-                console.log(result)
-                console.log("products===============",product)
-                console.log(CartTotal)
-                console.log(offer)
-                var obj1=offer[0].img;
-                console.log(obj1)
-                var obj2 = offer[1].img;
-                var obj3 = offer[2].img;
-                var foodSearch = "Select * from product"
-                con.query(foodSearch,(err,foods)=>{
-                  if(err){
-                    console.log(err)
-                  }else{
-                    res.render('user/home',{product,user,CartTotal,foods});
-                  }
-                })}        
-            })}
-      })
+
+        // Assuming CartTotal and foods are defined elsewhere
+        let CartTotal = countResult[0].total;
+        let foods = [];  // Replace this with the appropriate value
+
+        // Assuming user and CartTotal are used in your template
+        let user = req.session.user;
+        res.render('user/home', { product, user, CartTotal, foods });
+      });
     }
-  })
+  });
 });
+
 
 router.get('/userLogin',function(req,res,next){
   res.render("user/userLogin",{homepage:true})
@@ -96,7 +86,7 @@ router.post('/Ulogin',(req,res)=>{
   var email=req.body.email;
   var pass=req.body.password;
   console.log(email,pass)
-  var sql="select * from product where Product_name=? and Price=?"
+  var sql="select * from dadmin where name=? and password=?"
   con.query(sql,[email,pass],(err,result)=>{
     if(err){
       console.log(err);
@@ -521,20 +511,15 @@ router.post('/search',(req,res)=>{
 })
 router.get('/doctor',(req,res)=>{
   var user =  req.session.user;
-  var sql = "select * from  seller where type = 'volunteer' "
+  var sql = "select * from  user where type = 'volunteer' "
   con.query(sql,(err,result)=>{
     if(err){
       console.log(err)
     }else{
-      var sql2 = "select * from bookings where userMail = ?"
-      var mail = req.session.user.email;
-      con.query(sql2,[mail],(err,bookings)=>{
-        if(err){
-          console.log(err)
-        }else{
-          res.render('user/doctors',{result,user,homepage:true,bookings})
-        }
-      })
+   
+          res.render('user/doctors',{result,user,homepage:true})
+        
+
     }
 })
     

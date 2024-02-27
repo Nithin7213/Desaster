@@ -79,21 +79,16 @@
     <tr>
       <th scope="col">Seller ID</th>
       <th scope="col">Name</th>
-      <th scope="col">Email</th>
       <th scope="col">District</th>
-      <th scope="col">Registred As</th>
-        <th scope="col">action</th>
     </tr>
   </thead>
   <tbody>
       {{#each seller}}
     <tr>
       <th scope="row">{{this.id}}</th>
-      <td>{{this.userName}}</td>
-      <td>{{this.email}}</td>
+      <td>{{this.name}}</td>
       <td>{{this.place}}</td>
-      <td>{{this.type}}</td>
-       <td> <a href="/block/{{this.id}}" class="btn btn-outline-danger">Block</a></td>
+       {{!-- <td> <a href="/block/{{this.id}}" class="btn btn-outline-danger">Block</a></td> --}}
          {{!-- <td> <a href="/approve/{{this.id}}" class="btn btn-outline-info">Approve</a></td> --}}
     </tr>
   {{/each}}

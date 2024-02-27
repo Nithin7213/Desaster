@@ -48,8 +48,8 @@ router.get('/register',(req,res)=>{
 
 router.get('/clinic',(req,res)=>{
   var user =  req.session.user;
-  var sql = "select * from  doctors where clinicID = ?"
-  var vsql = "select * from seller where type = 'volunteer'"
+  var sql = "select * from  disaster where userId = ?"
+  var vsql = "select * from user where type = 'volunteer'"
   con.query(sql,[req.session.user.id],(err,result)=>{
     if(err){
       console.log(err)
@@ -70,8 +70,8 @@ router.get('/clinic',(req,res)=>{
     console.log(req.body);
     data=req.body;
     var email=req.body.email;
-    var sql1="select * from seller where email=?"
-    var sql2="insert into seller set ?"
+    var sql1="select * from user where email=?"
+    var sql2="insert into user set ?"
     con.query(sql1,[email],(err,result)=>{
     if(err){
         console.log(err)
@@ -109,7 +109,7 @@ router.get('/clinic',(req,res)=>{
       var pass = req.body.password;
       var type = req.body.type;
 
-      var sql = "SELECT * FROM seller WHERE email=? AND password=? AND type=?";
+      var sql = "SELECT * FROM user WHERE email=? AND password=? AND type=?";
        con.query(sql, [email, pass, type], (err, result) => {
           if (err) {
               console.log(err);
@@ -127,14 +127,14 @@ router.get('/clinic',(req,res)=>{
                       var user = req.session.user;
                       var sid = user.id;
 
-                      var sql3 = `SELECT * FROM product WHERE sellerID = ${sid}`;
+                      var sql3 = `SELECT * FROM dadmin`;
                       con.query(sql3, (err, row2) => {
                           if (err) {
                               console.log(err);
                               res.status(500).send("Internal Server Error");
                           } else {
                               if (userType === 'volunteer') {
-                                  var sqld = "SELECT * FROM doctors";
+                                  var sqld = "SELECT * FROM disaster";
                                   con.query(sqld, (err, rowd) => {
                                       if (err) {
                                           console.log(err);
@@ -195,7 +195,7 @@ router.post("/addskill",(req,res)=>{
     
     var file=req.files.uploaded_image;
     var image_name = file.name;
-    let sql="INSERT INTO product SET ?";
+    let sql="INSERT INTO dadmin SET ?";
     
     console.log(file)
     console.log(image_name);
@@ -207,9 +207,9 @@ router.post("/addskill",(req,res)=>{
     
     let data={
      
-      Product_name:req.body.name,
-      Description:req.body.description,
-      Price:req.body.price,
+      name:req.body.name,
+      place:req.body.description,
+      password:req.body.price,
       Image:image_name,
       sellerID:req.session.user.id,
       catagory:req.body.catagory,
@@ -254,7 +254,7 @@ router.post('/addDoctors',function(req,res){
   
   var file=req.files.uploaded_image;
   var image_name = file.name;
-  let sql="INSERT INTO doctors SET ?";
+  let sql="INSERT INTO disaster SET ?";
   
   console.log(file)
   console.log(image_name);
@@ -264,11 +264,11 @@ router.post('/addDoctors',function(req,res){
       if(err) return res.status(500).send(err);
       console.log(image_name);
         let data={
-          name:req.body.name,
-          time:req.body.time,
+          place:req.body.name,
+          type:req.body.time,
           photo:image_name,
-          clinicID:req.session.user.id,
-          clinicName:req.session.user.userName,
+          userId:req.session.user.id,
+          userName:req.session.user.userName,
           place:req.session.user.place,
         }; 
   console.log(data)
@@ -665,7 +665,7 @@ con.query(sql,data,(err,result)=>{
       var id = req.params.id;
   
       
-      sql = `Delete from doctors where id = ${id}`
+      sql = `Delete from disaster where id = ${id}`
       con.query(sql,(err,result)=>{
         if(err){
           console.log(err)

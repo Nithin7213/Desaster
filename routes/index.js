@@ -9,7 +9,7 @@ res.render('admin/homeIndex')
 })
 router.get('/delteD/:id',checkadmin,(req,res)=>{
   var id = req.params.id;
-  sql = `Delete from doctors where id = ${id}`
+  sql = `Delete from disaster where id = ${id}`
   con.query(sql,(err,result)=>{
     if(err){
       console.log(err)
@@ -30,7 +30,7 @@ router.post('/sentAlert',checkadmin,(req,res)=>{
   try {
       let place  = req.body.place
       console.log(place,req.body.message,"--")
-      let q = "select * from seller where place = ?"
+      let q = "select * from user where place = ?"
 
       let transporter = nodemailer.createTransport({
         service:'gmail',
@@ -76,7 +76,7 @@ router.post('/sentAlert',checkadmin,(req,res)=>{
 })
 router.get('/alerts',checkadmin,(req,res)=>{
     try {
-          let q  ="select * from doctors"
+          let q  ="select * from disaster"
           con.query(q,(err,result)=>{
               if(err){
                   console.log(err)
@@ -90,7 +90,7 @@ router.get('/alerts',checkadmin,(req,res)=>{
 })
 
 router.get('/home', checkadmin,function(req, res, next) {
-  var sql="select * from product"
+  var sql="select * from dadmin"
   con.query(sql,(err,result)=>{
     if(err){
       console.log(err)
@@ -145,7 +145,7 @@ if(!req.files) return res.status(400).send("no files were uploaded.");
 
 var file=req.files.uploaded_image;
 var image_name = file.name;
-let sql="INSERT INTO product SET ?";
+let sql="INSERT INTO dadmin SET ?";
 
 console.log(file)
 console.log(image_name);
@@ -159,9 +159,9 @@ if(file.mimetype =="image/jpeg" || file.mimetype =="image/png" || file.mimetype 
 
 let data={
  
-  Product_name:req.body.name,
-  Description:req.body.description,
-  Price:req.body.price,
+  name:req.body.name,
+  place:req.body.description,
+  password:req.body.price,
   Image:image_name,
 }; 
 console.log(data)
@@ -176,7 +176,7 @@ con.query(sql,data,(err,result)=>{
 } 
 })
 router.get('/sellers',checkadmin,(req,res)=>{
-  sql = "select * from seller"
+  sql = "select * from dadmin"
   con.query(sql,(err,result)=>{
     if(err){
       console.log(err)
@@ -189,7 +189,7 @@ router.get('/sellers',checkadmin,(req,res)=>{
 
 
 router.get('/userlist',checkadmin,(req,res)=>{
-  sql = "select * from seller"
+  sql = "select * from user"
   con.query(sql,(err,result)=>{
     if(err){
       console.log(err)
@@ -201,7 +201,7 @@ router.get('/userlist',checkadmin,(req,res)=>{
 })
 
 router.get('/Blocke_sellers',checkadmin,(req,res)=>{
-  sql = "select * from seller where status = 'blocked'"
+  sql = "select * from user where status = 'blocked'"
   con.query(sql,(err,result)=>{
     if(err){
       console.log(err)
@@ -278,7 +278,7 @@ router.get('/delete/:id',checkadmin,(req,res)=>{
 })
 router.get('/Userdelete/:id',checkadmin,(req,res)=>{
   var id = req.params.id;
-  sql = "Delete from seller where id = ?"
+  sql = "Delete from user where id = ?"
   con.query(sql,[id],(err,result)=>{
     if(err){
       console.log(err)
