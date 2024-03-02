@@ -92,12 +92,12 @@
     {{#each result}}
     <tr>
       {{!-- <td>{{this.Product_id}}</td> --}}
-      <td>{{this.name}}</td>
-      <td>{{this.time}}</td>
+      <td>{{this.place}}</td>
+      <td>{{this.type}}</td>
       <td> <img style="height: 50px; width:50px" src="/images/product/{{this.photo}}" alt=""> </td>
       <td> <a href="/delteD/{{this.id}}" class="btn btn-outline-danger">Delete</a></td>
       <form action="/sentAlert" method="post">  
-      <input type="hidden" value="{{this.name}}" name="place">
+      <input type="hidden" value="{{this.place}}" name="place">
        <td><input type="text" placeholder="Enter Message" name="message"></td>
       <td><button type="submit" class="btn btn-outline-info">Alert All</button></td>
       {{!-- <td><a href="/sentAlert/{{this.name}}" class="btn btn-info">Alert All</a></td> --}}
